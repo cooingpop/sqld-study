@@ -732,3 +732,59 @@ create index idx_emp_01 on EMP (join_date);
 - 벤더에서 사전에 정의한 예약어(Reserved word)는 쓸 수 없다.
 - A-Z, a-z, 0-9, _, $, # 문자만 허용된다.
 
+
+
+##### 왜래키
+
+- 테이블 생성시 설정할 수 있다.
+- 왜래키 값은 널 값을 가질 수 있다.
+- 한 테이블에 여러개 존재할 수 있다.
+- 왜래키 값은 참조 무결설 제약을 받을 수 있다.
+
+##### 데이터베이스 테이블의 제약조건(Constraint)에 대한 설명
+
+- Check 제약조건(Constraint)은 데이터베이스에서 데이터의 무결성을 유지하기 위하여 테이블의 특정 컬럼(Column)에 설정하는 제약이다.
+- 기본키(Primary Key)는 반드시 테이블 당 하나의 제약만을 정의할 수 있다.
+- 고유키(Unique Key)로 지정된 모든 컬럼은 Null 값을 가질 수도 있다.
+- 왜래키(Foreign Key)는 테이블 간의 관계를 정의하기 위해 기본키(Primary Key)를 다른 테이블의 왜래키가 참조하도록 생성한다.
+
+##### 테이블의 칼럼 삭제
+
+- alter table 테이블명 drop column 삭제할 칼럼명;
+
+##### 테이블에 데이터를 입력하는 두 가지 유형
+
+- insert into 테이블명 ( column_list) values  (column_list);
+  : column_list에 넣을 value_list
+- insert into 테이블명 values ( 전체 column에 넣을 value_list);
+
+##### 입력된 데이터의 수정
+
+- update 테이블명 set 수정되어야 할 칼럼명 = 수정될 새로운 값
+
+
+
+##### DEPENDENT
+
+표준 SQL(SQL:1999)에서 테이블 생성시 참조관계를 정의하기 위해 외래키(Foreign Key)를 선언한다. 관계형 데이터베이스에서 Child Table의 FK 데이터 생성시 Parent Table에 PK가 없는 경우, Child Table 데이터 입력을 허용하지 않는 참조동작(Referential Action)
+
+
+
+##### Delete(/Modify) Action : Cascade, Set Null, Set Default, Restrict
+
+1. Cascade : Master 삭제 시 Child 같이 삭제
+2. Set Null : Master 삭제 시 Child 해당 필드 Null
+3. Set Default : Master 삭제 시 Child 해당 필드 Default 값으로 설정
+4. Restrict : Child 테이블에 PK 값이 없는 경우만 Master 삭제 허용
+5. No Action : 참조무결성을 위반하는 삭제/수정 액션을 취하지 않음
+
+##### Insert Action : Automatic, Set Null, Set Default, Dependent
+
+1. Automatic  : Master 테이블에 PK가 없는 경우 Master PK를 생성 후 Child 입력
+2. Set Null : Master 테이블에 PK가 없는 경우 Child 외부키를 null 값으로 처리
+3. Set Default : Master 테이블에 PK가 없는 경우 Child 외부키를 지정된 기본값으로 입력
+4. Dependent : Master 테이블에 PK가 존재할 때만 Child 입력 허용
+5. No Action : 참조무결성을 위반하는 입력 액션을 취하지 않음
+
+
+
