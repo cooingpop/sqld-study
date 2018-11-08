@@ -606,7 +606,7 @@ alter table 기관분류 alter column (분류명 varchar(30), 등록일자 date 
 
 alter table 기관분류 alter column (분류명 varchar(30) not null, 등록일자 date not null); (X)
 
-→ SQLServer에서는 ***여러개의 컬럼을 동시******에 수정***하는 구문은 ***지원하지 않으므로*** 오류 발생. 또한 괄호를 사용하지 않는다.
+→ SQLServer에서는 ***여러개의 컬럼을 동시에 수정***하는 구문은 ***지원하지 않으므로*** 오류 발생. 또한 괄호를 사용하지 않는다.
 
 
 
