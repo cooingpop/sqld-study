@@ -492,4 +492,243 @@ where일자 between '20110101' and '20110102'
 	</tbody>
 </table>
 
+​    
+
+
+
+##### 테이블 칼럼에 대한 정의 변경
+
+- [Oracle]
+  Alter table 테이블명 modify (칼럼명1 데이터 유형 [default 식], [not null], 칼럼명2 데이터 유형 ...);
+- [SQL Server]
+  Alter table 테이블명 alter (칼럼명1 데이터 유형 [default 식], [not null], 칼럼명2 데이터 유형...);
+
+##### Null 설명
+
+- 모르는 값을 의미한다.
+- 값의 부재를 의미한다.
+- 공백문자(Empty String) 혹은 숫자 0과 동일하지 않다.
+- Null 과의 모든 비교(is null 제외) 는 알 수 없음(Unknown)을 반환한다.
+- 아직 정의되지 않은 미지의 값
+- 현재 데이터를 입려하지 못하는 경우
+
+
+
+##### DDL 구문(DBMS는 Oracle 기준)
+
+- DDL 올바른 문장
+
+###### 1번 문장
+
+create table PRODUCT( 
+
+​	prod_id varchar2(10) not null
+
+​	, prod_nm varchar2(100) not null)
+
+​	, reg_dt date not null
+
+​	, regr_no number(10) null
+
+);
+
+- DDL 잘못된 문장
+
+###### 1번 문장
+
+alter table PRODUCT add primary key product_pk on(prod_id); (X)
+
+→ alter table PRODUCT add ***constraint*** product_pk primary key(prod_id); (O)
+
+###### 2번 문장
+
+create table PRODUCT( 
+
+​	prod_id varchar2(10) not null
+
+​	, prod_nm varchar2(100) not null)
+
+​	, reg_dt date not null
+
+​	, regr_no number(10) null
+
+​	, ***add constraint primary key (prod_id***)
+
+); (X)
+
+→
+
+create table PRODUCT( 
+
+​	prod_id varchar2(10) not null
+
+​	, prod_nm varchar2(100) not null)
+
+​	, reg_dt date not null
+
+​	, regr_no number(10) null
+
+​	, ***constraint product_pk primary key(prod_id)***
+
+); (O)
+
+
+
+##### DDL 구문(DBMS는 SQLServer 기준)
+
+기관분류
+
+| 분류 ID : varchar(10) not null                               |
+| ------------------------------------------------------------ |
+| 분류명 : varchar(10) not null<br />등록일자 : varchar(10) null |
+
+→ 
+
+기관분류
+
+| 분류 ID : varchar(10) not null                              |
+| ----------------------------------------------------------- |
+| 분류명 : varchar(30) not null<br />등록일자 : date not null |
+
+
+
+- DDL 올바른 문장
+
+alter table 기관분류 alter column 분류명 varchar(30) not null;
+
+
+
+- DDL 잘못된 문장
+
+###### 1번 문장
+
+alter table 기관분류 alter column (분류명 varchar(30), 등록일자 date not null); (X)
+
+alter table 기관분류 alter column (분류명 varchar(30) not null, 등록일자 date not null); (X)
+
+→ SQLServer에서는 ***여러개의 컬럼을 동시******에 수정***하는 구문은 ***지원하지 않으므로*** 오류 발생. 또한 괄호를 사용하지 않는다.
+
+
+
+###### 2번문장
+
+alter table 기관분류 alter column 등록일자 date not null; (X)
+
+→ 분류명을 수정할 때 not null 구문을 지정하지 않으면, 기존의 not null 제약조건이 null로 변경되므로 not null 요건을 만족하지 않는다.
+
+###### 
+
+EMP
+
+| EMP_NO : varchar2(10) not null                               |
+| ------------------------------------------------------------ |
+| emp_nm : varchar2(30) not null<br />dept_code : varchar2(4) not null<br />join_date : date not null<br />regist_date : date null |
+
+- DDL 올바른 문장
+
+###### 1번 문장
+
+create table EMP (
+
+​	emp_no varchar2(10) primary key
+
+​	, emp_nm varchar2(30) not null
+
+​	, dept_code varchar2(4) default '0000' not null
+
+​	, join_date date not null
+
+​	, regist_date date null
+
+); 
+
+###### 2번 문장
+
+create table EMP (
+
+​	emp_no varchar2(10) not null
+
+​	, emp_nm varchar2(30) not null
+
+​	, dept_code varchar2(4) default '0000' not null
+
+​	, join_date date not null
+
+​	, regist_date date
+
+);
+
+alter table EMP add constraint emp_pk_primary key(emp_no);
+
+create index idx_emp_01 on EMP (join_date);
+
+
+
+- DDL 잘못된 문장
+
+###### 1번 문장
+
+create table EMP (
+
+​	emp_no varchar2(10) primary key
+
+​	, emp_nm varchar2(30) not null
+
+​	, ***dept_code varchar2(4) default '0000'***
+
+​	, join_date date not null
+
+​	, regist_date date
+
+);
+
+→ SQL은 정상적으로 수행되지만, dept_code 칼럼에 not null 제약조건이 생성되지 않는다.
+
+해당 칼럼에 null 을 입력하게 되면 문제가 발생한다.
+
+
+
+###### 2번문장
+
+create table EMP (
+
+​	emp_no varchar2(10) not null ***primary key***
+
+​	, emp_nm varchar2(30) not null
+
+​	, dept_code varchar2(4) default '0000' not null
+
+​	, join_date date not null
+
+​	, join_date not null
+
+);
+
+***alter table EMP add constraint emp_pk_primary key (emp_no);***
+
+create index idx_emp_01 on EMP (join_date);
+
+→ 테이블 생성문과 인덱스 생성문은 정상적으로 수행되지만, 테이블 생성문장에서 이미 primary key를 지정하였으므로 alter table 문장에서 오류가 발생한다.
+
+
+
+##### 테이블 생성시 칼럼별 생성할 수 있는 제약 조건(Constraints) 설명
+
+- UNIQUE : 테이블 내에는 중복되는 값이 없으며 NOT NULL 특징을 갖는다.
+- PK : 주키로 테이블당 1개만 생성이 가능하다.
+- FK : 외래키로 테이블당 여러 개 생성이 가능하다.
+- NOT NULL : 명시적으로 NULL 입력을 방지한다.
+
+##### 테이블 생성의 주의사항
+
+- 테이블명은 객체를 의미할 수 있는 적절한 이름을 사용한다. 가능한 단수형을 권고한다.
+- 테이블 명은 다른 테이블 의 이름과 중복되지 않아야 한다.
+- 한 테이블 내에서는 칼럼명이 중복되게 지정될 수 없다.
+- 테이블 이름을 지정하고 각 칼럼들은 괄호 "( )"로 묶어 지정한다.
+- 각 칼럼들은 콤마 "."로 구분되고, 테이블 생성문의 끝은 항상 세미콜론";"으로 끝난다.
+- 칼럼에 대해서는 다른 테이블까지 고려하여 데이터베이스 내에서는 일관성 있게 사용하는 것이 좋다.(데이터 표준화 관점)
+- 칼럼 뒤에 데이터 유형은 꼭 지정되어야 한다.
+- 테이블명과 칼럼명은 반드시 문자로 시작해야 하고, 벤더별로 길이에 대한 한계가 있다.
+- 벤더에서 사전에 정의한 예약어(Reserved word)는 쓸 수 없다.
+- A-Z, a-z, 0-9, _, $, # 문자만 허용된다.
 
