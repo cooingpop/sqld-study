@@ -576,15 +576,15 @@ create table PRODUCT(
 
 ##### DDL 구문(DBMS는 SQLServer 기준)
 
-기관분류
+기관분류(가)
 
 | 분류 ID : varchar(10) not null                               |
 | ------------------------------------------------------------ |
 | 분류명 : varchar(10) not null<br />등록일자 : varchar(10) null |
 
-→ 
+→ 기관분류(가) 테이블을 아래 기관분류(나) 테이블처럼 변경하고자 한다.
 
-기관분류
+기관분류(나)
 
 | 분류 ID : varchar(10) not null                              |
 | ----------------------------------------------------------- |
@@ -616,7 +616,7 @@ alter table 기관분류 alter column 등록일자 date not null; (X)
 
 → 분류명을 수정할 때 not null 구문을 지정하지 않으면, 기존의 not null 제약조건이 null로 변경되므로 not null 요건을 만족하지 않는다.
 
-###### 
+
 
 EMP
 
