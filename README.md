@@ -762,7 +762,11 @@ create index idx_emp_01 on EMP (join_date);
 
 - update 테이블명 set 수정되어야 할 칼럼명 = 수정될 새로운 값
 
+##### 테이블에 입력된 데이터 조회
 
+- select [ALL / DISTINCT] 조회할 칼럼명, 조회할 칼럼명, ... from 해당 칼럼들이 있는 테이블명
+  - ALL : Default 옵션이므로 별도로 표시하지 않아도 된다. 중복된 데이터가 있어도 모두 출력
+  - DISTINCT : 중복된 데이터가 있는 경우 1건으로 처리해서 출력
 
 ##### DEPENDENT
 
@@ -785,6 +789,257 @@ create index idx_emp_01 on EMP (join_date);
 3. Set Default : Master 테이블에 PK가 없는 경우 Child 외부키를 지정된 기본값으로 입력
 4. Dependent : Master 테이블에 PK가 존재할 때만 Child 입력 허용
 5. No Action : 참조무결성을 위반하는 입력 액션을 취하지 않음
+
+##### SQL 명령어
+
+- TRUNCATE TABLE 테이블명;
+  : 특정 테이블의 모든 데이터를 삭제하고, 디스크 사용량을 초기화 
+- DELETE FROM 테이블명;
+  : 테이블의 데이터를 모두 삭제하지만, 디스크 사용량을 초기화하지 않는다.
+- DROP TABLE 테이블명;
+  : 테이블의 데이터를 모두 삭제하고 디스크 사용량도 삭제(초기화) 하고 테이블의 스키마 정의도 함께 삭제된다.
+
+###### DELETE TABLE FROM 테이블명; : 존재하지 않는 명령어
+
+
+
+<table>
+    <thead>
+        <th>DROP</th>
+        <th>TRUNCATE</th>
+        <th>DELETE</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>DDL</td>
+            <td>DDL(일부 DML 성격 가짐)</td>
+            <td>DML</td>
+        </tr>
+        <tr>
+            <td>Rollback 불가능</td>
+            <td>Rollback 불가능</td>
+            <td>Commit 이전 Rollback 가능</td>
+        </tr>
+        <tr>
+            <td>Auto Commit</td>
+            <td>Auto Commit</td>
+            <td>사용자 Commit</td>
+        </tr>
+        <tr>
+            <td>테이블이 사용했던 Storage를 모두 Release(해제)</td>
+            <td>테이블이 사용했던 Storage중 최초 테이블 생성시 할당된 Storage만 남기고 Release</td>
+            <td>데이터를 모두 Delete해도 사용했던 Storage는 Release되지 않음</td>
+        </tr>
+        <tr>
+            <td>테이블의 정의 자체를 완전히 삭제함</td>
+            <td>테이블을 최초 생성된 초기상태로 만듦</td>
+            <td>데이터만 삭제</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+##### 트랜잭션의 특징
+
+- 원자성(atomicity) : 트랜잭션에서 정의된 연산들은 모두 성공적으로 실행되던지 아니면 전혀 실행되지 않은 상태로 남아 있어야 한다.(All or Nothing)
+- 일관성(consistency) : 트랜잭션이 실행 되기 전의 데이터베이스 내용이 잘못 되어 있지 않다면 트랜잭션이 실행된 이후에도 데이터베이스의 내용에 잘못이 있으면 안된다.
+- 고립성(isolation) : 트랜잭션이 실행되는 도중에 다른 트랜잭션의 영향을 받아 잘못된 결과를 만들어서는 안된다.
+- 지속성(durability) : 트랜잭션이 성공적으로 수행되면 그 트랜잭션이 갱신한 데이터베이스의 내용은 영구적으로 저장된다.
+
+
+
+##### 데이터베이스 트랜잭션에 대한 격리성이 낮은 경우 발생할 수 있는 문제
+
+1. Dirty Read : 다른 트랜잭션에 의해 수정되었고 이미 커밋된 데이터를 읽는 것
+2. isolation : 트랜잭션이 실행되는 도중에 다른 트랜잭션의 영향을 받아 잘못된 결과를 만들어서는 안된다.
+
+
+
+- 트랜잭션(Transaction) :  데이터베이스의 논리적 연산산뒤로서 밀접히 관련되어 분리될 수 없는 한 개 이상의 데이터베이스 조작
+- 커밋(Commit) : 트랜잭션의 종료를 위한 대표적 명령어로서는 데이터에 대한 변경사항을 데이터베이스에 영구적으로 반영
+- 롤백(Rollback) : 데이터에 대한 변경사항을 모두 폐기하고 변경전의 상태로 되돌림.
+
+
+
+- Begin Transaction
+
+  : Begin Transaction ( BEGIN TRAN ) 으로 시작하고 Commit Transaction( Transaction은 생략 가능 ) 또는 Rollback 구문을 만나면 최초의 BEGIN TRANSACTION 시점까지 모두 ROLLBACK 수행
+
+- 저장점(SAVEPOINT)
+  : 롤백(ROLLBACK)할 때 트랜잭션에 포함된 전체 작업을 롤백하는 것이 아니라 현 시점에서 SAVEPOINT까지 트랜잭션의 일부만 롤백할 수 있다.
+
+---
+
+##### ORACLE
+
+SAVEPOINT SVPT1;
+
+...
+
+ROLLBACK TO SVPT1;
+
+
+
+##### SQL Server
+
+SAVE TRANSACTION
+
+​	SVTR1;
+
+...
+
+ROLLBACK
+
+​	TRANSACTION
+
+​	SVTR1;
+
+---
+
+
+
+##### WHERE 절
+
+- FROM 절 다음에 위치
+- 칼럼(Column)명 (보통 조건식의 좌측에 위치)
+- 비교 연산자
+- 문자, 숫자, 표현식(보통 조건식의 우측에 위치)
+- 비교 칼럼명(JOIN 사용시)
+
+##### 실행 결과 적절한 것
+
+| EMPNO | SAL  |
+| ----- | ---- |
+| 100   | 1500 |
+| 200   | 3000 |
+| 300   | 2000 |
+
+SELECT COUNT(*)
+
+FROM EMP
+
+WHERE EMPNO > 100 AND SAL >= 3000 OR EMPNO = 200;
+
+→ 1
+
+논리연산자의 우선순위는 NOT > AND > OR 순
+
+
+
+##### 연산자의 우선순위
+
+1. 괄호로 묶은 연산
+2. 부정 연산자(NOT)
+3. 비교 연산자 (=, >, >=, <=)와 SQL 비교 연산자 ( BETWEEN a AND b, IN (list), LIKE, IS NULL)
+4. 논리 연산자 중 AND, OR 의 순으로 처리
+
+##### BETWEEN a AND b
+
+- a와 b의 값 사이에 있으면 된다. (a와 b 값이 포함됨)
+
+##### IN (list)
+
+- 리스트에 있는 값 중에서 어느 하나라도 일치하면 된다.
+
+
+
+##### NULL의 연산
+
+- NULL 값과의 연산(+, -, *, / 등) 은 NULL 값을 리턴
+- NULL 값과의 비교연산 (=, >, >=, <=)은 거짓(FALSE)을 리턴
+- 특정 값보다 크다, 적다라고 표현할 수 없음.
+
+
+
+##### 부정 비교 연산자
+
+- != : 같지 않다.
+- ^= : 같지 않다.
+- <> : 같지 않다. (ISO 표준, 모든 운영체제에서 사용 가능)
+-  NOT 칼럼명 = : ~와 같지 않다.
+- NOT 칼럼명 > : ~보다 크지 않다.
+
+
+
+| 문자형 함수                                               | 함수 설명                                                    |
+| --------------------------------------------------------- | ------------------------------------------------------------ |
+| LOWER(문자열)                                             | 문자열의 알파벳 무자를 소문자로 바꾸어 준다.                 |
+| UPPER(문자열)                                             | 문자열의 알파벳 문자를 대문자로 바꾸어 준다.                 |
+| ASCII(문자)                                               | 문자나 숫자를 ASCII 코드 번호로 바꾸어 준다.                 |
+| CHR / CHAR(ASCII번호)                                     | ASCII 코드 번호를 문자나 숫자로 바꾸어 준다.                 |
+| CONCAT(문자열1, 문자열2)                                  | Oracle, My SQL에서 유효한 함수이며 문자열1과 문자열2를 연결한다.<br />합성 연산자 '\|\|' (Oracle)나 '+'(SQL Server)와 동일하다. |
+| SUBSTR / SUBSTRING (문자열, m [,n])                       | ex) substring("test", 1, 3) , substring("test", 1)<br />문자열 중 m 위치에서 n개의 문자 길이에 해당하는 문자를 돌려준다.<br />n이 생략되면 마지막 문자까지다. |
+| LENGTH / LEN(문자열)                                      | 문자열의 갯수를 숫자값으로 돌려준다.                         |
+| LTRIM(문자열 [, 지정문자])                                | 문자열의 첫 문자부터 확인해서 지정 문자가 나타나면 해당 문자를 제거한다. (지정 문자가 생략되면 공백 값이 디폴트)<br />SQL Server에서는 LTRIM 함수에 지정문자를 사용할 수 없다. 즉, 공백만 제거할 수 있다. |
+| RTRIM(문자열 [, 지정문자])                                | 문자열의 마지막 문자부터 확인해서 지정 문자가 나타나는 동안 해당 문자를 제거한다. (지정 문자가 생략되면 공백 값이 디폴트)<br />SQL Server 에서는 RTRIM 함수에 지정문자를 사용할 수 없다. 즉 , 공백만 제거할 수 있다. |
+| TRIM ([leading \| trailing \| both] 지정문자 FROM 문자열) | 문자열에서 머릿말, 꼬릿말, 또는 양쪽에 있는 지정 문자를 제거한다.<br />(leading \| trailing \| both 가 생략되면 both 가 디폴트)<br />SQL Server에서는 TRIM 함수에 지정문자를 사용할 수 없다. 즉, 공백만 제거할 수 있다. |
+
+###### ※주 : Oracle함수 / SQL Server 함수 표시,  '/' 없는 것은 공통 함수
+
+
+
+##### DUAL 테이블의 특성
+
+- 사용자 SYS가 소유하며 모든 사용자가 액세스 가능한 테이블이다.
+- SELECT ~ FROM ~ 의 형식을 갖추기 위한 일종의 DUMMY 테이블이다.
+- DUMMY라는 문자열 유형의 칼럼에 'X' 라는 값이 들어 있는 행을 1건 포함하고 있다.
+
+
+
+##### 오라클 환경 날짜형 데이터
+
+SELECT TO_CHAR(TO_DATE('2015.01.10 10', 'YYYY.MM.DD HH24') + 1/24/(60/10), 'YYYY.MM.DD HH24:MI:SI') FROM DUAL;
+
+1/24/60 = 1분을 의미
+
+1/24/(60/10) = 10분
+
+→ 2015.01.10 10:10:00
+
+
+
+---
+
+##### SEARCHED_CASE_EXPRESSION SQL 문장을 SIMPLE_CASE_EXPRESSION 문장으로
+
+- SEARCHED_CASE_EXPRESSION
+  SELECT LOC,
+  ​	CASE WHEN LOC = 'NEW YORK' THEN 'EAST'
+  ​		ELSE 'ETC'
+  ​	END as AREA
+  FROM DEPT
+
+→
+
+- SIMPLE_CASE_EXPRESSION
+  SELECT LOC,
+  ​	CASE LOC WHEN 'NEW YORK' THEN 'EAST'
+  ​		ELSE 'ETC'
+  ​	END as AREA
+  FROM DEPT;
+
+---
+
+##### NULL의 특성
+
+- 널 값은 아직 정의되지 않은 값으로 - 또는 공백과 다르다. -은 숫자이고, 공백은 하나의 문자이다.
+- 테이블을 생성할 때 NOT NULL 또는 PRIMARY KEY로 정의되지 않은 모든 데이터 유형은 널 값을 포함할 수 있다.
+- 널 값을 포함하는 연산의 경우 결과 값도 널 값이다. 모르는 데이터에 숫자를 더하거나 빼도 결과는 마찬가지로 모르는 데이터인 것과 같다.
+- 결과 값을 NULL 이 아닌 다른 값을 얻고자 할 때 NVL / ISNULL 함수를 사용한다.
+- NULL 값의 대상이 숫자유형 데이터인 경우는 주로 0(Zero)으로, 문자유형 데이터인 경우는 블랭크 보다는 'x' 같이 시스템에서 의미 없는 문자로 바꾸는 경우가 많다.
+
+
+
+##### 단일행 NULL 관련 함수의 종류
+
+| 일반형 함수                                      | 함수 설명                                                    |
+| ------------------------------------------------ | ------------------------------------------------------------ |
+| NVL(표현식1, 표현식2) / ISNULL(표현식1, 표현식2) | 표현식 1의 결과 값이 NULL 이면 표현식 2의 값을 출력한다.<br />단, 표현식 1과 표현식 2의 결과 데이터 타입이 같아야 한다.<br />NULL 관련 가장 많이 사용되는 함수이므로 상당히 중요하다. |
+| NULLIF(표현식1, 표현식2)                         | 표현식1이 표현식2와 같으면 NULL, 같지 않으면 표현식1을 리턴한다. |
+| COALESCE(표현식1, 표현식2, ...)                  | 임의이 개수 표현식에서 NULL이 아닌 최초의 표현식을 나타낸다. <br />모든 표현식이 NULL 이라면 NULL을 리턴한다. |
+
+###### ※ 주 : Oracle 함수/ SQL Server 함수 표시, '/' 없는 것은 공통 함수
 
 
 
