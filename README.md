@@ -1086,3 +1086,190 @@ SELECT SUM(COALESCE(C1, C2, C3)) FROM TAB1
 | VARIAN([DISTINCT \| ALL] 표현식) | 표현식의 분산을 출력한다.                                  |
 | 기타 통계 함수                   | 벤더별로 다양한 통계식을 제공한다.                         |
 
+
+
+##### GROUP BY 문장
+
+SELECT (DISTINCT) 칼럼명 (ALIAS명) FROM 테이블명
+
+ (WHERE 조건식) (GROUP BY 칼럼(COlUMN)이나 표현식) (HAVING 그룹조건식);
+
+
+
+###### 직원 테이블(EMP)이 직급(GRADE) 별로 사원 500명, 대리 100명, 과장 30명, 차장 10명, 부장 5명, 직급이 정해지지 않은(NULL) 사람 25명
+
+SQL1) 부터 SQL3) 까지 순차 실행 결과값? 
+
+SQL1) SELECT COUNT(GRADE) FROM EMP;
+
+SQL2) SELECT GRADE FROM EMP WHERE GRADE IN ('차장', '부장', '널');
+
+SQL3) SELECT GRADE, COUNT(*) FROM EMP GROUP BY GRADE;
+
+
+
+###### SELECT COUNT(GRADE) FROM EMP;
+
+- 645명 : 사원 500명 + 대리 100명 + 과장 30명 + 차장 10명 + 부장 5명  이때 NULL 25건은 제외
+
+###### SELECT GRADE FROM EMP WHERE GRADE IN ('차장', '부장', '널');
+
+- 15명 : 차장 10명 + 부장 5명
+  - '널' 텍스트로 입력된 데이터는 없다고 봐야 함.
+  - 정의되지 않은 미지의 값인 NULL 과 '널'텍스트 데이터는 다름. 또한 IN('차장', '부장', NULL)로 변경하여도 실제 NULL 데이터는 출력되지 않음. NULL 비교는 오직 'IS NULL, IS NOT NULL' 만 가능
+
+###### SELECT GRADE, COUNT(*) FROM EMP GROUP BY GRADE;
+
+- 6건 : 5개 직급 + NULL 기준별 데이터 수가 6건 출력됨
+
+
+
+##### GROUP BY 절과 HAVING 절의 특성
+
+- GROUP BY 절을 통해 소그룹별 기준을 정한 후, SELECT 절에 집계 함수를 사용한다.
+- 집계 함수의 통계 정보는 NULL 값을 가진 행을 제외하고 수행한다
+- GROUP BY 절에서는 SELECT 절과는 달리 ALIAS 명을 사용할 수 없다.
+- 집계 함수는 WHERE 절에는 올 수 없다.(집계 함수를 사용할 수 있는 GROUP BY 절보다는 WHERE 절이 먼저 수행된다)
+- WHERE 절은 전체 데이터를 GROUP 으로 나누기 전에 행들을 미리 제거시킨다.
+- HAVING 절은 GROUP BY 절의 기준 항목이나 소그룹의 집계 함수를 이용한 조건을 표시할 수 있다.
+- GROUP BY 절에 의한 소그룹별로 만들어진 집계 데이터 중, HAVING 절에서 제한 조건을 두거 조건을 만족하는 내용한 출력한다.
+- HAVING 절은 일반적으로 GROUP BY 절 뒤에 위치한다.
+
+
+
+##### ORDER BY 문장
+
+- SELECT 칼럼명 (ALIAS명) FROM 테이블명 (WHERE 조건식) (GROUP BY 칼럼(COLUMN)이나 표현식) (HAVING 그룹조건식) (ORDER BY 칼럼(COLUMN이나 표현식 {ASC 또는 DESC}));
+- ASC(Ascending) : 조회한 데이터를 오름차순으로 정렬한다. (기본 값이므로 생략 가능)
+- DESC(Descending) : 조회한 데이터를 내림차순으로 정렬한다.
+
+
+
+##### ORDER BY 절 특징
+
+- 기본적인 정렬 순서는 오름차순(ASC)이다.
+- 숫자형 데이터 타입은 오름차순으로 정렬했을 경우에 가장 작은 값부터 출력된다.
+- 날짜형 데이터 타입은 오름차순으로 정렬했을 경우 날짜 값이 가장 빠른 값이 먼저 출력된다.
+- Oracle에서는 NULL 값을 가장 큰 값으로 간주하여 오름차순으로 정렬했을 경우에는 가장 마지막에, 내림차순으로 정렬했을 경우에는 가장 먼저 위치한다.
+- 반면, SQL Server에서는 NULL 값을 가장 작은 값으로 간주하여 오름차순으로 정렬했을 경우에는 가장 먼저, 내림차순으로 정렬했을 경우네느 가장 마지막에 위치한다.
+
+##### SELECT 문자 실행 순서
+
+1. 발췌 대상 테이블을 참조한다.(FROM)
+2. 발췌 대상 데이터가 아닌 것을 제거한다.(WHERE)
+3. 행들을 소그룹화 한다.(GROUP BY)
+4. 그룹핑된 값의 조건에 맞는 것만을 출력한다. (HAVING)
+5. 데이터 값을 출력/ 게산한다. (SELECT)
+6. 데이터를 정렬한다. (ORDER BY)
+
+##### [TOP () 예제] 사원
+
+- 테이블에서 급여가 높은 2명을 내림차순으로 출력하는데 같은 급여를 받는 사원이 있으면 같이 출력한다.
+  - SELECT TOP(2) WITH TIES ENAME, SAL FROM EMP ORDER BY SAL DESC;
+
+###### 5개의 테이블로부터 필요한 칼럼을 조회하려고 할 때, 최소 몇 개의 JOIN 조건이 필요한가?
+
+→ 4개 ( 최소 N-1 개의 JOIN 조건이 필요)
+
+##### EUQI JOIN 문장
+
+- SELECT 테이블1.칼럼명, 테이블2.칼럼명, ... FROM 테이블1, 테이블2 WHERE 테이블1.칼럼명1 = 테이블2.칼럼명2; → WHERE 절에 JOIN 조건을 넣는다.
+
+##### ANSI/ISO SQL 표준 EQUI JOIN 문장
+
+- SELECT 테이블1.칼럼명, 테이블2.칼럼명, ... FROM 테이블1 INNER JOIN 테이블2 ON 테이블1.칼럼명1 = 테이블2.칼럼명2; → ON 절에 JOIN 조건을 넣는다.
+
+
+
+##### Join에 대한 설명
+
+1. 일반적으로 Join은 PK와 FK 값의 연관성에 의해 성립된다.
+2. EQUI Join은 Join에 관여하는 테이블 간의 컬럼 값들이 정확하게 일치하는 경우에 사용되는 방법이다.
+3. EQUI Join은 '=' 연산자에 의해서만 수행되며, 그 이외의 비교 연산자를 사용하는 경우에는 모두 Non EQUI Join이다.
+4. 대부분 Non EQUI Join을 수행할 수 있지만, 때로는 설계상의 이유로 수행이 불가능한 경우도 있다.
+
+
+
+##### LIKE 연산자 조인
+
+[EMP_TBL]
+
+| EMPNO | ENAME |
+| ----- | ----- |
+| 1000  | SMITH |
+| 1050  | ALLEN |
+| 1100  | SCOTT |
+
+[RULE_TBL]
+
+| RULE_NO | RULE |
+| ------- | ---- |
+| 1       | S%   |
+| 2       | %T%  |
+
+[SQL]
+
+SELECT COUNT(*) CNT
+
+FROM EMP_TBL A, RULE_TBL B
+
+WHERE A.ENAME LIKE B.RULE
+
+→ 4
+
+
+
+| EMPNO | ENAME | RULE |
+| ----- | ----- | ---- |
+| 1100  | SMITH | S%   |
+| 1100  | SCOTT | S%   |
+| 1000  | SMITH | %T%  |
+| 1100  | SCOTT | %T%  |
+
+
+
+## SQL 활용
+
+##### 순수 관계 연산자와 SQL 문장 비교
+
+- SELECT 연산은 WHERE 절로 구현
+- PROJECT 연산은 SELECT 절로 구현
+- (NATURAL) JOIN 연산은 다양한 JOIN 기능으로 구현
+- DIVIDE 연산은 현재 사용되지 않음
+
+
+
+ANSI/ISO SQL 에서 표시하는 FROM 절의 JOIN형태
+
+- INNER JOIN
+  - INNER JOIN은 OUTER(외부)JOIN과 대비하여 내부 JOIN이라고 하며, JOIN 조건에서 동일한 값이 있는 행만 반환
+- NATURAL JOIN
+- USING 조건절
+- ON 조건절
+- CROSS JOIN
+  - 테이블 간 JOIN 조건이 없는 경우 생길 수 있는 조합을 말한다. 결과는 양쪽 집합의 M*N건의 데이터 조합이 발생한다.
+- OUTER JOIN(LEFT, RIGHT, FULL)
+  - LEFT OUTER JOIN : 조인 수행시 먼저 표기된 좌측 테이블에 해당하는 데이터를 먼저 읽은 후, 나중 표기된 우측 테이블에서 JOIN 대상 데이터를 읽어 온다. 즉, Table A와 B가 있을 때 (Table 'A'가 기준이 됨),
+    A와 B를 비교해서 B의 JOIN 칼럼에서 같은 값이 있을 때 그 해당 데이터를 가져오고, B의 JOIN 칼럼에서 같은 값이 없는 경우에는 B 테이블에서 가져오는 칼럼들을 NULL 값으로 채운다.
+  - FULL OUTER JOIN : 조인 수행시 좌측, 우측 테이블의 모든 데이터를 읽어 JOIN하여 결과를 생성한다. 즉, TABLE A와 B가 있을 때 (TABLE 'A', 'B' 모두 기준이 됨), RIGHT OUTER JOIN과 LEFT OUTER JOIN의 결과를 합집합으로 처리한 결과와 동일하다.
+
+##### OUTER JOIN 문장 예시
+
+- LEFT OTER JOIN
+  - SELECT X.KEY1, Y.KEY2 FROM TAB1 X LEFT OUTER JOIN TAB2 Y ON (X.KEY1=Y.KEY2)
+- RIGHT OUTER JOIN
+  - SELECT X.KEY1, Y.KEY2 FROM TAB1 X RIGHT OUTER JOIN TAB2 Y
+- FULL OUTER JOIN
+  - SELECT X.KEY1, Y.KEY2 FROM TAB1 X FULL OUTER JOIN TAB2 Y ON (X.KEY1 = Y.KEY2)
+
+
+
+##### 집합 연산자의 종류
+
+| 집합 연산자 | 연산자의 의미                                                |
+| ----------- | ------------------------------------------------------------ |
+| UNION       | 여러 개의 SQL 문의 결과에 대한 합집합으로 결과에서 모든 중복된 행은 하나의 행으로 만든다. |
+| UNION ALL   | 여러 개의 SQL문의 결과에 대한 합집합으로 중복된 행도 그대로 결과로 표시된다. 즉, 단순히 결과만 합쳐놓은 것이다. 일반적으로 여러 질의 결과가 상호 배타적인(Exclusive)일 때 많이 사용한다. 개별 SQL문의 결과가 서로 중복되지 않는 경우, UNION과 결과가 동일하다.(결과의 정렬 순서에는 차이가 있을 수 있음) |
+| INTERSECT   | 여러 개의 SQL문의 결과에 대한 교집합이다. 중복된 행은 하나의 행으로 만든다. |
+| EXCEPT      | 앞의 SQL문의 결과에서 뒤의 SQL문의 결과에 대한 차집합이다. 중복된 행은 하나의 행으로 만든다. (일부 데이터베이스는 MINUS를 사용함) |
+
