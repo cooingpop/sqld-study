@@ -1426,10 +1426,53 @@ ANSI/ISO SQL 에서 표시하는 FROM 절의 JOIN형태
 - DBMS정의 에러나 사용자 정의 에러를 정의하여 사용할 수 있다.
 - Oracle에 내장되어 있으므로 Oracle과 PL / SQL을 지원하는 어떤 서버로도 프로그램을 옮길 수 있다.
 - 응용프로그램의 성능을 향상시킨다.
+- 변수와 상수 등을 사용하여 일반 SQL 문장을 실행할 때 WHERE절의 조건 등으로 대입할 수 있다.
+- Procedure, User Defined Function, Trigger 객체를 PL/SQL로 작성 할 수 있다.
+- Procedure 내부에 작성된 절차적 코드는 PL/SQL엔진이 처리하고 일반적인 SQL문장은 SQL 실행기가 처리한다.
+- PL/SQL로 작성된 Procedure, User Defined Function은 작성자의 기준으로 트랜잭션을 분할할 수 있다.
+- 프로시저 내에서 다른 프로시저를 호출할 경우에 호출 프로시저의 트랜잭션과는 별도로 PRAGMA AUTONOMOUS_TRANSACTION을 선언하여 자율 트랜잭션 처리를 할 수 있다.
 
 
 
+Lee : GTANT SELECT, INSERT, DELETE ON R TO Kim WITH GRANT OPTION;
 
+→ Kim에게 테이블 R에 SELECT, INSERT, DELETE 권한을 주면서, Kim이 다른 유저에게 테이블 R에 동일한 권한을 줄 수 있다.
+
+Kim : GRANT SELECT, INSERT, DELETE ON R TO Park;
+
+→ Kim이 테이블 R에 lee에게 받은 권한을 Park에게 준다.
+
+Lee : REVOKE DELETE ON R FROM Kim;
+
+→ Kim에서 테이블 R의 DELETE 권한을 취소한다.
+
+Lee : REVOKE INSERT ON R FROM Kim CASCADE;
+
+→ Kim과 Park에서 INSERT 권한을 취소한다. WITH GRANT OPTION으로 Kim으로부터 받은 Park의 권한은 CASCADE 명령어로 받은 권한을 취소할 수 있다.
+
+
+
+##### 저장 모듈(Stored Module)
+
+- SQL 문장을 데이터 베이스 서버에 저장하여 사용자와 애플리케이션 사이에서 공유할 수 있도록 만든 일종의 SQL 컴포넌트 프로그램이며, 독립적으로 실행되거나 다른 프로그램으로부터 실행될 수 있는 완전한 실행 프로그램이다.
+- Oracle의 저장 모듈에는 Procedure, User Defined Function, Trigger가 있다.
+
+##### Trigger
+
+1. 데이터베이스에 의해서 자동으로 호출되고 수행된다.
+2. 특정 테이블에 대해서 INSERT, UPDATE, DELETE 문이 수행되었을 때 호출되도록 정의할 수 있다.
+3. 데이터베이스에 로그인하는 작업에도 정의할 수 있다.
+4. Procdure와 달리 Commit 및 Rollback 과 같은 TCL을 사용할 수 없다.
+
+
+
+##### 프로시저와 트리거의 차이점
+
+| 프로시저                   | 트리거                       |
+| -------------------------- | ---------------------------- |
+| CREATE Procedure 문법 사용 | CREATE Trigger 문법 사용     |
+| EXECUTE 명령어로 실행      | 생성 후 자동으로 실행        |
+| COMMIT, ROLLBACK 실행 가능 | COMMIT, ROLLBACK 실행 불가능 |
 
 
 
