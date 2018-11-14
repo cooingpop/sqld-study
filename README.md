@@ -1625,7 +1625,7 @@ Lee : REVOKE INSERT ON R FROM Kim CASCADE;
 - 클러스터링 팩터가 좋은 인덱스를 사용하면 Buffer Pinning 효과로 I/O를 줄일 수 있다.
 - Table Full Scan한 데이터 블록은 LRU end 에 위치하기 때문에 버퍼 캐시에 오래 머물지 않는다.
 
-##### REsponse Time Analysis 방법론
+##### Response Time Analysis 방법론
 
 - Response Time을 정의하고, CPU Time과 Wait Time을 각각 break down 하면서 서버의 일량과 대기 시간을 분석해 나간다.
 - CPU Time은 파싱 작업에 소비한 시간인지 아니면 쿼리 본연의 오퍼레이션 수행을 위해 소비한 시간인지를 분석한다.
