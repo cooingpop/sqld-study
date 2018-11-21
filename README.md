@@ -2061,7 +2061,7 @@ WHERE t1.sal BETWEN t2.losal AND t2.hisal
 6. Window Sort
    - 윈도우 함수를 수행할 때 나타난다.
 
-
+---
 
 ##### 테이블 Tab1에 다음과 같은 데이터가 존재. 각 컬럼의 타입은 Number
 
@@ -2072,6 +2072,10 @@ col1	col2	col3
 15	NULL NULL
 
 50	70	20
+
+---
+
+
 
 칼럼끼리 연산할 때 null을 포함하면 결과는 null이다.
 
@@ -2087,7 +2091,7 @@ select sum(col2 + col3) from tab1의 결과는 90
   - 파티션 단위 백업, 추가 , 삭제, 변경
 - 성능적 측면
   - 파티션 단위 조회 및 DML 수행, 경합 및 부하 분산, 가용성 향상, 조회성능 개선
-  
-  
+
+
+
 끝.
-  
