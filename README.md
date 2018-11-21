@@ -2046,5 +2046,48 @@ WHERE t1.sal BETWEN t2.losal AND t2.hisal
 
 
 
+##### 소트와 관련된 오퍼레이션 유형
+
+1. Sort Aggregate
+   - 전체 로우를 대상으로 집계를 수행할 때 나타나며, Oracle 실행계획에 sort라는 표현이 사용됐지만 실제 소트가 발생하진 않는다.
+2. Sort Order By
+   - 정렬된 결과집합을 얻고자 할 때 나타난다.
+3. Sort Group By
+   - Sorting 알고리즘을 사용해 그룹별 집계를 수행할 때 나타난다.
+4. Sort Unique
+   - 선택된 결과집합에서 중복 레코드를 자거하고자 할 때 나타난다. Union 연산자나 아래와 같이 Distinct 연산자를 사용할 때가 대표적이다.
+5. Sort Join
+   - Sort Merge Join을 수행할 때 나타난다.
+6. Window Sort
+   - 윈도우 함수를 수행할 때 나타난다.
 
 
+
+##### 테이블 Tab1에 다음과 같은 데이터가 존재. 각 컬럼의 타입은 Number
+
+col1	col2	col3
+
+10	20	NULL
+
+15	NULL NULL
+
+50	70	20
+
+칼럼끼리 연산할 때 null을 포함하면 결과는 null이다.
+
+레코드끼리 연산할 때 null을 포함하면 결과가 null 이 아니며, 이유는 null을 연산자에서 제외하기 때문
+
+select sum(col2 + col3) from tab1의 결과는 90
+
+
+
+##### 파티셔닝이 필요한 이유
+
+- 관리적 측면
+  - 파티션 단위 백업, 추가 , 삭제, 변경
+- 성능적 측면
+  - 파티션 단위 조회 및 DML 수행, 경합 및 부하 분산, 가용성 향상, 조회성능 개선
+  
+  
+끝.
+  
